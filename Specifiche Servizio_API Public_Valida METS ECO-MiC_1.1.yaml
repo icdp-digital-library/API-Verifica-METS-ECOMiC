@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: SRP_validametsecomic
+  description: API per la verifica del MetsEcomic 1.1
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+components:
+  schemas:
+    ValidationResponse:
+      description: Upload OK
+      type: object
+      properties:
+        esito:
+          type: boolean
+        nomeCheck:
+          type: string
+        filesResponse:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileValidationResponse'
+    ResponseBase:
+      description: Upload KO
+      type: object
+      properties:
+        esito:
+          type: boolean
+        listaMessaggi:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileValidationResponse'
+    FileValidationResponse:
+      description: Validazione dei singolo file .xml
+      type: object
+      properties:
+        idErrore:
+          type: number
+        tipologiaErrore:
+          type: string
+        descrizioneErrore:
+          type: string
+        tagCoinvolto:
+          type: string
+        fileLocationDetail:
+          type: string
+paths:
+  /api/v1/checkmetsecomic/files:
+    post:
+      tags:
+        - srp-valida-v-mets-eco-mic-controller
+      description: Verifica del MetsEcomic 1.1 attraverso il caricamento di un file .xml
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - files
+              properties:
+                files:
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        '412':
+          description: Precondition Failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseBase'
